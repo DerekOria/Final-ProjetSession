@@ -1,0 +1,89 @@
+@startuml
+
+title Modèle Relationnel de Données - KAEB
+
+hide circle
+
+class "Utilisateur" as U {
+    +id : int <<PK>>
+    nom : string
+    email : string
+    mot_de_passe : string
+    avatar_url : string
+    xp_total : int
+    niveau : string
+    date_creation : datetime
+}
+
+class "Matiere" as M {
+    +id : int <<PK>>
+    nom : string
+    description : string
+}
+
+class "Publication" as P {
+    +id : int <<PK>>
+    titre : string
+    contenu : text
+    fichier_url : string
+    date_publication : datetime
+    -- FK
+    user_id : int <<FK>>
+    matiere_id : int <<FK>>
+}
+
+class "Commentaire" as C {
+    +id : int <<PK>>
+    contenu : text
+    date_commentaire : datetime
+    -- FK
+    user_id : int <<FK>>
+    publication_id : int <<FK>>
+}
+
+class "Reaction" as R {
+    +id : int <<PK>>
+    type : string   'like, dislike, etc.
+    -- FK
+    user_id : int <<FK>>
+    publication_id : int <<FK>>
+}
+
+class "Habit" as H {
+    +id : int <<PK>>
+    nom : string
+    description : string
+}
+
+class "UserHabit" as UH {
+    +id : int <<PK>>
+    date : date
+    etat : boolean
+    -- FK
+    user_id : int <<FK>>
+    habit_id : int <<FK>>
+}
+
+class "Point" as PT {
+    +id : int <<PK>>
+    valeur : int
+    raison : string
+    date_obtenue : datetime
+    -- FK
+    user_id : int <<FK>>
+}
+
+U "1" --> "0..*" P : crée
+U "1" --> "0..*" C : écrit
+U "1" --> "0..*" R : réagit
+U "1" --> "0..*" UH : suit
+U "1" --> "0..*" PT : reçoit
+
+M "1" --> "0..*" P : contient
+
+P "1" --> "0..*" C : reçoit
+P "1" --> "0..*" R : reçoit
+
+H "1" --> "0..*" UH : est suivi
+
+@enduml
