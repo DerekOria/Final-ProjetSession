@@ -1,7 +1,7 @@
-import { View, Button, Text } from "react-native-web";
+import { View, Button, Text } from "react-native";
 
 
-export default function PublicationScreen({navigation}){
+export default function PublicationScreen(){
 
     return(
         <View>

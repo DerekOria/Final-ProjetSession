@@ -1,11 +1,11 @@
-import { View, Button, Text } from "react-native-web";
+import { View, Button, Text } from "react-native";
 
 
-export default function HomeScreen({navigation}){
+export default function HomeScreen(){
 
     return(
         <View>
-
+            <Text> </Text>
         </View>
     );
 

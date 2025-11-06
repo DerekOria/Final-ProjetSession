@@ -1,7 +1,7 @@
-import { View, Button, Text } from "react-native-web";
+import { View, Button, Text } from "react-native";
 
 
-export default function ProfileScreen({navigation}){
+export default function ProfileScreen(){
 
     return(
         <View>
