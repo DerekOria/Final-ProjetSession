@@ -5,7 +5,7 @@ title Modèle Relationnel de Données - KAEB
 hide circle
 
 class "Utilisateur" as U {
-    +id : int <<PK>>
+    id : int <<PK>>
     nom : string
     email : string
     mot_de_passe : string
@@ -16,13 +16,13 @@ class "Utilisateur" as U {
 }
 
 class "Matiere" as M {
-    +id : int <<PK>>
+    id : int <<PK>>
     nom : string
     description : string
 }
 
 class "Publication" as P {
-    +id : int <<PK>>
+    id : int <<PK>>
     titre : string
     contenu : text
     fichier_url : string
@@ -33,7 +33,7 @@ class "Publication" as P {
 }
 
 class "Commentaire" as C {
-    +id : int <<PK>>
+    id : int <<PK>>
     contenu : text
     date_commentaire : datetime
     -- FK
@@ -73,17 +73,17 @@ class "Point" as PT {
     user_id : int <<FK>>
 }
 
-U "1" --> "0..*" P : crée
-U "1" --> "0..*" C : écrit
-U "1" --> "0..*" R : réagit
-U "1" --> "0..*" UH : suit
-U "1" --> "0..*" PT : reçoit
+U "1" -- "0..*" P : crée
+U "1" -- "0..*" C : écrit
+U "1" -- "0..*" R : réagit
+U "1" -- "0..*" UH : suit
+U "1" -- "0..*" PT : reçoit
 
-M "1" --> "0..*" P : contient
+M "1" -- "0..*" P : contient
 
-P "1" --> "0..*" C : reçoit
-P "1" --> "0..*" R : reçoit
+P "1" -- "0..*" C : reçoit
+P "1" -- "0..*" R : reçoit
 
-H "1" --> "0..*" UH : est suivi
+H "1" -- "0..*" UH : est suivi
 
 @enduml

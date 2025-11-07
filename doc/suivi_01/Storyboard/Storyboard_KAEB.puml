@@ -15,19 +15,28 @@ rectangle "FocusRoom" as FocusRoom
 rectangle "HabitTracker" as HabitTracker
 rectangle "LockIn" as LockIn
 rectangle "Recherche" as Recherche
+rectangle "Liste des taches" as ListeTaches
+rectangle "Ajouter une tache" as AjouterTache
+rectangle "Modifier une tache" as ModifierTache
+rectangle "Supprimer une tache" as SupprimerTache
+rectangle "Consulter une tache" as ConsulterTache
 
-'--- Authentification ---
+rectangle "Ajouter post" as AjouterPost
+rectangle "Modifier post" as ModifierPost
+rectangle "Supprimer post" as SupprimerPost
+rectangle "Consulter post" as ConsulterPost
+
+' Authentification
 Login --> Home : connexion réussie
-Login <. Home : deconnexion
+Login <. Home : déconnexion
 Login --> Register : créer un compte
 Login <. Register : retour
 
-
-'--- Navigation principale ---
+' Profil
 Home --> Profile : voir profil
 Profile --> Home : retour
 
-'--- Modules accessibles depuis Home ---
+' Navigation principale
 Home --> Communaute : entrer dans une communauté
 Home --> Publication : voir publications
 Home --> FocusRoom : mode focus
@@ -35,24 +44,29 @@ Home --> HabitTracker : suivi d'habitudes
 Home --> LockIn : activer Lock-In
 Home --> Recherche : rechercher contenu
 
-'--- Navigation entre modules ---
-Communaute --> Publication : ouvrir publication
-Publication --> Communaute : retour
-FocusRoom --> HabitTracker : navigation possible
-HabitTracker --> LockIn : navigation possible
-LockIn --> FocusRoom : navigation possible
-
-'--- Création de post ---
+' CRUDL CreatePost
 Home --> CreatePost : bouton "+"
+CreatePost --> AjouterPost : créer un post
+CreatePost --> ModifierPost : modifier un post
+CreatePost --> SupprimerPost : supprimer un post
+CreatePost --> ConsulterPost : voir post
+AjouterPost .> CreatePost : retour
+ModifierPost .> CreatePost : retour
+SupprimerPost .> CreatePost : retour
+ConsulterPost .> CreatePost : retour
 CreatePost --> Home : retour (annuler)
 CreatePost --> Home : confirmer post (sauvegarde réussie)
 
-'--- Retours généraux ---
-Communaute .> Home : retour
-Publication .> Home : retour
-FocusRoom .> Home : retour
-HabitTracker .> Home : retour
-LockIn .> Home : retour
-Recherche .> Home : retour
+HabitTracker --> ListeTaches : liste des tâches
+ListeTaches --> AjouterTache : ajouter
+ListeTaches --> ModifierTache : modifier
+ListeTaches --> SupprimerTache : supprimer
+ListeTaches --> ConsulterTache : consulter
+AjouterTache .> ListeTaches : retour
+ModifierTache .> ListeTaches : retour
+SupprimerTache .> ListeTaches : retour
+ConsulterTache .> ListeTaches : retour
+ListeTaches --> HabitTracker : retour
+HabitTracker --> Home : retour
 
-@enduml
+
