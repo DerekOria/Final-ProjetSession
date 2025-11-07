@@ -1,0 +1,58 @@
+@startuml
+title Storyboard - Application mobile KAEB (StudyShare)
+
+left to right direction 
+hide circle
+
+rectangle "Login" as Login
+rectangle "Register" as Register
+rectangle "Home" as Home
+rectangle "Profile" as Profile
+rectangle "Communaute" as Communaute
+rectangle "Publication" as Publication
+rectangle "CreatePost" as CreatePost
+rectangle "FocusRoom" as FocusRoom
+rectangle "HabitTracker" as HabitTracker
+rectangle "LockIn" as LockIn
+rectangle "Recherche" as Recherche
+
+'--- Authentification ---
+Login --> Home : connexion réussie
+Login <. Home : deconnexion
+Login --> Register : créer un compte
+Login <. Register : retour
+
+
+'--- Navigation principale ---
+Home --> Profile : voir profil
+Profile --> Home : retour
+
+'--- Modules accessibles depuis Home ---
+Home --> Communaute : entrer dans une communauté
+Home --> Publication : voir publications
+Home --> FocusRoom : mode focus
+Home --> HabitTracker : suivi d'habitudes
+Home --> LockIn : activer Lock-In
+Home --> Recherche : rechercher contenu
+
+'--- Navigation entre modules ---
+Communaute --> Publication : ouvrir publication
+Publication --> Communaute : retour
+FocusRoom --> HabitTracker : navigation possible
+HabitTracker --> LockIn : navigation possible
+LockIn --> FocusRoom : navigation possible
+
+'--- Création de post ---
+Home --> CreatePost : bouton "+"
+CreatePost --> Home : retour (annuler)
+CreatePost --> Home : confirmer post (sauvegarde réussie)
+
+'--- Retours généraux ---
+Communaute .> Home : retour
+Publication .> Home : retour
+FocusRoom .> Home : retour
+HabitTracker .> Home : retour
+LockIn .> Home : retour
+Recherche .> Home : retour
+
+@enduml

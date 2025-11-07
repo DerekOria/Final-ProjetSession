@@ -5,15 +5,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import ThemeIcon from "../../components/CustomBotton";
 import { useNavigation } from "@react-navigation/native";
 
-export default function LoginScreen({}){
+export default function LockInScreen(){
 
     const navigation = useNavigation();
     
     return(
         <SafeAreaView style={theme.screenContainer}>
             
-
-            <View>
+            <View style={theme.headerOutils}>
+                
+                <ThemeIcon style={theme.backHome} name="arrow-back-outline" onPress={() => navigation.navigate("Home")} />
                 
             </View>
 

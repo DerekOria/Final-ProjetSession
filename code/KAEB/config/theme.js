@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { ScreenContainer } from "react-native-screens";
+import { ScreenContainer, SearchBar } from "react-native-screens";
 
 
 export const colors = {
@@ -48,12 +48,18 @@ export const theme = StyleSheet.create({
         fontWeight: 'bold',
         color: colors.text,
         
-    },
-    headerRow:{
+    },headerRow:{
+
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-    }, bottomRow: {
+
+    },headerOutils:{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 60,
+    },bottomRow: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -100,9 +106,26 @@ export const theme = StyleSheet.create({
         
     },divider: {
         height: 1,
-        backgroundColor: "rgba(255, 255, 255, 0.15)", 
+        backgroundColor: "rgba(255, 255, 255, 0.15)",
         width: "100%",
         marginTop: 10,
         marginBottom: 10,
+    }, searchBar: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: colors.card,
+        borderRadius: 12,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.sm,
+        marginVertical: spacing.sm,
+        bottom: 70,
+        right: 10,
+        width: 310,
+    }, searchInput: {
+        flex: 1,
+        marginLeft: spacing.sm,
+        colors: colors.text,
+        fontSize: fonts.size.md,
+        
     }
 });

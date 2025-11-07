@@ -1,4 +1,4 @@
-import { View, Button, Text } from "react-native";
+import { View, Button, Text } from "react-native-web";
 
 
 export default function PublicationScreen(){
