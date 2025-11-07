@@ -58,20 +58,46 @@ export const theme = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
-    },
-        profileButton: {
+        bottom: 15,
+        left: 20,
+        right: 20,
+    }, backHome: {
+        bottom: 70,
+    },profileButton: {
         width: 40,
         height: 40,
         borderRadius: 20,
         overflow: "hidden",
-    },
-    profileImage: {
+    },profileImage: {
         width: "100%",
         height: "100%",
         borderRadius: 20,
+    },profileButtonProfile: {
+        width: 120,
+        height: 120,
+        borderRadius: 20,
+        overflow: "hidden",
+    },profileImageLarge:{
+        width: 150,
+        height: 150,
+        borderRadius:75,
+        borderWidth: 3,
+    },profileName:{
+        color: colors.text,
+        fontSize: fonts.size.xxl,
+        fontWeight: "bold",
+    },profileContainer:{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 40,
+    },content: {
+        flexDirection: "column",
+        alignItems: "center",
+        color: colors.text,
+        fontWeight: "bold",
+        fontSize : fonts.size.xxl,
+        
     },divider: {
         height: 1,
         backgroundColor: "rgba(255, 255, 255, 0.15)", 

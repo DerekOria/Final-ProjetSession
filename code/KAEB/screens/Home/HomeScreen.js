@@ -2,11 +2,13 @@ import { View, Button, Text, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, theme } from "../../config/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import ThemeIcon from "../../components/CustomBotton";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen(){
 
+    // pour naviguer entre screens
+    const navigation = useNavigation();
     // juste pour tester
     const userImage = "https://cdn-icons-png.flaticon.com/512/149/149071.png"; // Imagen por defecto
 
@@ -19,7 +21,7 @@ export default function HomeScreen(){
                 <Text style={theme.title}>+</Text>
             </TouchableOpacity>
             <Text style={theme.title}> KAEB </Text>
-            <TouchableOpacity style={theme.profileButton}>
+            <TouchableOpacity style={theme.profileButton} onPress={() => navigation.navigate("Profile") }>
             <Image
             source={{ uri: userImage }}
             style={theme.profileImage}
@@ -29,8 +31,8 @@ export default function HomeScreen(){
 
         <View style={theme.divider}/>
 
-        <View>
-            <Text>CONTENT</Text>
+        <View style={theme.content}>
+            <Text style={theme.content}>CONTENT</Text>
         </View>
 
         <View style={theme.bottomRow}>
