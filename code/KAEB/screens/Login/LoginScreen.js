@@ -11,7 +11,35 @@ export default function LoginScreen({ navigation }) {
 
     const AUTH = "dGVhbTc6RjY4NWNmMWFlIWJiNWM1ODg4NWRlMzBkYw==";
 
+    // -----------------------------
+    // VALIDATIONS
+    // -----------------------------
+    const validateFields = () => {
+        if (!email || !password) {
+            setError("Veuillez remplir tous les champs.");
+            return false;
+        }
+
+        const emailRegex = /\S+@\S+\.\S+/;
+        if (!emailRegex.test(email)) {
+            setError("L'adresse courriel n'est pas valide.");
+            return false;
+        }
+
+        if (password.length < 4) {
+            setError("Le mot de passe doit contenir au moins 4 caractères.");
+            return false;
+        }
+
+        return true;
+    };
+
     const handleLogin = async () => {
+        setError("");
+
+        // ✔ Validation avant d'appeler Martha
+        if (!validateFields()) return;
+
         const response = await fetch("http://martha.jh.shawinigan.info/queries/login-user/execute", {
             method: "POST",
             headers: {
@@ -37,7 +65,7 @@ export default function LoginScreen({ navigation }) {
                 routes: [{ name: "Home" }]
             });
         } else {
-            setMessage("Email o contraseña inválida.");
+            setError("Courriel ou mot de passe invalide.");
         }
     };
 
@@ -48,7 +76,7 @@ export default function LoginScreen({ navigation }) {
                 <Text style={[theme.title, { marginBottom: 40 }]}>KAEB</Text>
 
                 <TextInput
-                    placeholder="Email"
+                    placeholder="Courriel"
                     placeholderTextColor="#666"
                     style={theme.input}
                     value={email}
@@ -56,7 +84,7 @@ export default function LoginScreen({ navigation }) {
                 />
 
                 <TextInput
-                    placeholder="Contraseña"
+                    placeholder="Mot de passe"
                     placeholderTextColor="#666"
                     secureTextEntry
                     style={theme.input}
@@ -69,14 +97,14 @@ export default function LoginScreen({ navigation }) {
                 )}
 
                 <TouchableOpacity style={theme.button} onPress={handleLogin}>
-                    <Text style={theme.buttonText}>Iniciar Sesión</Text>
+                    <Text style={theme.buttonText}>Se connecter</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={{ marginTop: 20 }}
                     onPress={() => navigation.navigate("Register")}
                 >
-                    <Text style={{ color: colors.primary }}>Crear cuenta</Text>
+                    <Text style={{ color: colors.primary }}>Créer un compte</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

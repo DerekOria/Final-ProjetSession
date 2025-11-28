@@ -156,3 +156,41 @@ Ce guide explique en détail tout le processus technique, pour quelqu’un qui n
 ### 4.2 Étape 2 – Création des queries Martha
 ### 4.3 Étape 3 – Liaison avec l’application (fetch)
 ### 4.4 Sauvegarde
+
+# Complement de l’application
+
+## ✅ UI
+- Grand avatar  
+- Onglets **“Publications”** / **“Enregistrés”**  
+- Grille **3×3** inspirée d’Instagram  
+- Tout aligné verticalement (résultat correct)  
+
+---
+
+## ✅ UX
+- Onglets tactiles fonctionnels  
+- Clic sur une photo → ouverture de **PublicationScreen**  
+- Bouton de retour  
+- **BottomBar** présent sur toute l’application  
+
+---
+
+## ✅ Données
+- `select-profile/execute`  
+- `select-user-posts/execute`  
+
+**Données correctes envoyées par Martha :**
+- `avatar_url`  
+- `firstname`  
+- `lastname`  
+- `posts` de l’utilisateur  
+- `image_url`  
+
+---
+
+## ✅ Persistance
+- L’avatar persiste grâce à :
+  - `upload-profile-avatar`
+  - requête `update-avatar`  
+- Les publications persistent (stockées dans la table **Posts**)  
+- Le **fetch** est relancé correctement lors de l’entrée dans **Profile**  
