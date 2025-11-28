@@ -9,6 +9,7 @@ import HabitTrackerScreen from '../screens/Outils/HabitTrackerScreen';
 import LockInScreen from '../screens/Outils/LockInScreen';
 import RechercheScreen from '../screens/Outils/RechercheScreen';
 import CreatePostScreen from '../screens/Publication/CreatePostScreen'
+import RegisterScreen from '../screens/Login/RegisterScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,9 +17,10 @@ export default function AppNavigator() {
     
     return(
 
-    <Stack.Navigator initalRouteName="HomeScreen" screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={HomeScreen}/>
         <Stack.Screen name="Login" component={LoginScreen}/>
+        <Stack.Screen name="Register" component={RegisterScreen}/>
         <Stack.Screen name="Profile" component={ProfileScreen}/>
         <Stack.Screen name="Publication" component={PublicationScreen}/>
         <Stack.Screen name="Recherche" component={RechercheScreen}/>

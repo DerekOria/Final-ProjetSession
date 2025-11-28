@@ -42,7 +42,7 @@ class "Commentaire" as C {
 }
 
 class "Reaction" as R {
-    +id : int <<PK>>
+    id : int <<PK>>
     type : string   'like, dislike, etc.
     -- FK
     user_id : int <<FK>>
@@ -50,13 +50,13 @@ class "Reaction" as R {
 }
 
 class "Habit" as H {
-    +id : int <<PK>>
+    id : int <<PK>>
     nom : string
     description : string
 }
 
 class "UserHabit" as UH {
-    +id : int <<PK>>
+    id : int <<PK>>
     date : date
     etat : boolean
     -- FK
@@ -65,7 +65,7 @@ class "UserHabit" as UH {
 }
 
 class "Point" as PT {
-    +id : int <<PK>>
+    id : int <<PK>>
     valeur : int
     raison : string
     date_obtenue : datetime

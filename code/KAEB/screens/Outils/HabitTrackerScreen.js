@@ -4,6 +4,7 @@ import { colors, theme } from "../../config/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ThemeIcon from "../../components/CustomBotton";
 import { useNavigation } from "@react-navigation/native";
+import BottomBar from "../../components/BottomBar";
 
 export default function HabitTrackerScreen(){
 
@@ -18,6 +19,7 @@ export default function HabitTrackerScreen(){
                 
             </View>
 
+        <BottomBar />
 
         </SafeAreaView>
     );

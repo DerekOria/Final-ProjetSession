@@ -15,12 +15,14 @@ rectangle "FocusRoom" as FocusRoom
 rectangle "HabitTracker" as HabitTracker
 rectangle "LockIn" as LockIn
 rectangle "Recherche" as Recherche
+
 rectangle "Liste des taches" as ListeTaches
 rectangle "Ajouter une tache" as AjouterTache
 rectangle "Modifier une tache" as ModifierTache
 rectangle "Supprimer une tache" as SupprimerTache
 rectangle "Consulter une tache" as ConsulterTache
 
+rectangle "Liste des posts" as ListePosts
 rectangle "Ajouter post" as AjouterPost
 rectangle "Modifier post" as ModifierPost
 rectangle "Supprimer post" as SupprimerPost
@@ -50,6 +52,8 @@ CreatePost --> AjouterPost : créer un post
 CreatePost --> ModifierPost : modifier un post
 CreatePost --> SupprimerPost : supprimer un post
 CreatePost --> ConsulterPost : voir post
+CreatePost --> ListePosts : Liste de posts a l'utilisateur
+ListePosts .> CreatePost : retour
 AjouterPost .> CreatePost : retour
 ModifierPost .> CreatePost : retour
 SupprimerPost .> CreatePost : retour
