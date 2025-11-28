@@ -1,6 +1,6 @@
 # KAEB – Rapport du Sprint 1  
 ### Développement d’applications mobiles  
-### Étudiant : Derek Lopez  
+### Étudiant : Samer Sultan - Derek Lopez  
 ### Sprint 1 – Liste et Consultation  
 ### Date : 28 novembre  
 
