@@ -89,7 +89,6 @@ Un bouton retour permet de revenir à **Home**.
 | id | firstname | lastname       | birthdate   | career | email           | password |
 |----|-----------|----------------|-------------|--------|-----------------|----------|
 | 4  | Derek     | Lopez          | 2003-11-30  | TI     | asd@gmail.com   | 123456   |
-| 5  | Nirouz    | Cara de culo   | 2000-01-01  | SI     | 12345@gmail.com | 123456   |
 | 6  | Samer     | Sultan         | 2004-09-04  | TI     | a@gmail.com     | 123456   |
 
 ⚙️ Les mots de passe sont hashés avec :  
