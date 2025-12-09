@@ -4,15 +4,19 @@ import {
     Image,
     TouchableOpacity,
     StyleSheet,
-    Animated
+    Animated,
 } from "react-native";
 
 import { useRef, useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function PostCard({ post }) {
-
+    const navigation = useNavigation();
     const fadeAnim = useRef(new Animated.Value(0)).current;
+    const [liked, setLiked] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState(null);
 
     useEffect(() => {
         Animated.timing(fadeAnim, {
@@ -20,13 +24,22 @@ export default function PostCard({ post }) {
             duration: 350,
             useNativeDriver: false,
         }).start();
+        
+        const getUserId = async () => {
+            const id = await AsyncStorage.getItem("user_id");
+            setCurrentUserId(id);
+        };
+        getUserId();
     }, []);
 
-    const [liked, setLiked] = useState(false);
+    const handleEdit = () => {
+        navigation.navigate("EditPost", { post });
+    };
+
+    const isOwner = currentUserId && currentUserId == post.user_id;
 
     return (
         <Animated.View style={[styles.card, { opacity: fadeAnim }]}>
-
             {/* HEADER */}
             <View style={styles.header}>
                 <Image
@@ -39,10 +52,14 @@ export default function PostCard({ post }) {
                         {post.firstname} {post.lastname}
                     </Text>
 
-                    <Text style={styles.subInfo}>
-                        • {post.community}
-                    </Text>
+                    <Text style={styles.subInfo}>• {post.community}</Text>
                 </View>
+                
+                {isOwner && (
+                     <TouchableOpacity onPress={handleEdit} style={{marginRight: 10}}>
+                        <Ionicons name="create-outline" size={22} color="#CCC" />
+                    </TouchableOpacity>
+                )}
 
                 <Ionicons name="ellipsis-vertical" size={22} color="#CCC" />
             </View>
@@ -58,7 +75,6 @@ export default function PostCard({ post }) {
 
             {/* ACTIONS */}
             <View style={styles.actions}>
-                
                 <TouchableOpacity onPress={() => setLiked(!liked)}>
                     <Ionicons
                         name={liked ? "heart" : "heart-outline"}
@@ -74,15 +90,14 @@ export default function PostCard({ post }) {
                 <TouchableOpacity>
                     <Ionicons name="repeat-outline" size={26} color="#FFF" />
                 </TouchableOpacity>
-
             </View>
 
             {/* DESCRIPTION */}
             <Text style={styles.desc}>{post.description}</Text>
-
         </Animated.View>
     );
 }
+
 
 const styles = StyleSheet.create({
     card: {
@@ -90,7 +105,6 @@ const styles = StyleSheet.create({
         padding: 14,
         borderRadius: 14,
         marginVertical: 10,
-        marginHorizontal: 12,
     },
     header: {
         flexDirection: "row",

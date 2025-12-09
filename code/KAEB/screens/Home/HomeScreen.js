@@ -2,18 +2,19 @@ import { View, Button, Text, TouchableOpacity, Image, ScrollView } from "react-n
 import { Ionicons } from "@expo/vector-icons";
 import { colors, theme } from "../../config/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import BottomBar from "../../components/BottomBar";
+import BottomBar from "../../components/BottomBar"; // Re-add BottomBar import
 import PostCard from "../../components/PostCard";
 
 
-export default function HomeScreen(){
+export default function HomeScreen({ route }){
 
     const [UserId, setUserId] = useState("");
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const isFocused = useIsFocused(); 
 
     const AUTH = "dGVhbTc6RjY4NWNmMWFlIWJiNWM1ODg4NWRlMzBkYw==";
 
@@ -48,9 +49,11 @@ export default function HomeScreen(){
                 setLoading(false);
             }
         };
+        if (isFocused) {
+            fetchPosts();
+        }
+    }, [isFocused]);
 
-        fetchPosts();
-    }, []);
 
 
     useEffect(() => {
@@ -89,7 +92,7 @@ export default function HomeScreen(){
 
         <View style={theme.divider}/>
 
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{paddingHorizontal: 16}}>
             {loading ? (
                 <Text style={{ color: "white", textAlign: "center", marginTop: 20 }}>Loading posts...</Text>
             ) : (
@@ -106,7 +109,7 @@ export default function HomeScreen(){
 
 
         
-        <BottomBar />
+        <BottomBar /> {/* Re-add BottomBar */}
 
         </SafeAreaView>
     );

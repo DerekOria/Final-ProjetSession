@@ -39,7 +39,6 @@ export const theme = StyleSheet.create({
         flex: 1,
         position: "relative",
         backgroundColor: colors.background,
-        paddingHorizontal: spacing.md,
         paddingTop: spacing.lg,
         paddingBottom: 60,
         
@@ -69,7 +68,63 @@ export const theme = StyleSheet.create({
         bottom: 15,
         left: 20,
         right: 20,
-    }, backHome: {
+    },
+    label: {
+        color: colors.text,
+        fontSize: fonts.size.md,
+        fontWeight: 'bold',
+        marginTop: spacing.lg,
+        marginBottom: spacing.sm,
+    },
+    input: {
+        backgroundColor: '#2C2C2E',
+        color: colors.text,
+        padding: spacing.md,
+        borderRadius: 10,
+        fontSize: fonts.size.md,
+    },
+    communityOption: {
+        backgroundColor: '#2C2C2E',
+        padding: spacing.md,
+        borderRadius: 10,
+        marginBottom: spacing.sm,
+    },
+    communitySelected: {
+        backgroundColor: colors.primary,
+    },
+    communityText: {
+        color: colors.text,
+        fontSize: fonts.size.md,
+        textAlign: 'center',
+    },
+    imageButton: {
+        backgroundColor: colors.yellow,
+        padding: spacing.md,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginTop: spacing.lg,
+    },
+    previewImage: {
+        width: '100%',
+        height: 200,
+        borderRadius: 10,
+        marginTop: spacing.md,
+        resizeMode: 'cover',
+    },
+    publishButton: {
+        backgroundColor: colors.primary,
+        padding: spacing.lg,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginTop: spacing.xl,
+        marginBottom: spacing.xl,
+    },
+    publishButtonText: {
+        color: colors.text,
+        fontSize: fonts.size.lg,
+        fontWeight: 'bold',
+    },
+     backHome: {
         bottom: 70,
     },profileButton: {
         width: 40,

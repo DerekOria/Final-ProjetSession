@@ -9,7 +9,11 @@ import HabitTrackerScreen from '../screens/Outils/HabitTrackerScreen';
 import LockInScreen from '../screens/Outils/LockInScreen';
 import RechercheScreen from '../screens/Outils/RechercheScreen';
 import CreatePostScreen from '../screens/Publication/CreatePostScreen'
+import EditPostScreen from '../screens/Publication/EditPostScreen';
 import RegisterScreen from '../screens/Login/RegisterScreen';
+import AddHabitScreen from '../screens/Outils/AddHabitScreen';
+import EditHabitScreen from '../screens/Outils/EditHabitScreen';
+import EditProfileScreen from '../screens/Profile/EditProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +33,10 @@ export default function AppNavigator() {
         <Stack.Screen name="HabitTracker" component={HabitTrackerScreen}/>
         <Stack.Screen name="LockIn" component={LockInScreen}/>
         <Stack.Screen name="CreatePost" component={CreatePostScreen}/>
+        <Stack.Screen name="EditPost" component={EditPostScreen}/>
+        <Stack.Screen name="AddHabit" component={AddHabitScreen}/>
+        <Stack.Screen name="EditHabit" component={EditHabitScreen}/>
+        <Stack.Screen name="EditProfile" component={EditProfileScreen}/>
     </Stack.Navigator>
 
     );
