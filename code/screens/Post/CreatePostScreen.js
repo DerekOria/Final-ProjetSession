@@ -6,17 +6,19 @@ import { theme } from "../../config/theme";
 import Dropdown from "../../components/Dropdown";
 import { Ionicons } from "@expo/vector-icons";
 import { marthaFetch, getCommunityId, getHabitId, sanitizeForSQL, urlToBase64 } from "../../config/api";
+import * as ImagePicker from 'expo-image-picker';
 
 export default function CreatePostScreen({ navigation }) {
 
-    const [communities, setCommunities] = useState([]);
+    const [communities, setCommunities] = useState([]); // Charger les communities depuis Martha
     const [selectedCommunity, setSelectedCommunity] = useState(null);
     const [description, setDescription] = useState("");
     const [imageUrl, setImageUrl] = useState("");
     const [userId, setUserId] = useState(null);
-    const [habits, setHabits] = useState([]);
+    const [habits, setHabits] = useState([]); // Charger les habits depuis Martha
     const [selectedHabit, setSelectedHabit] = useState(null);
-    const [isConverting, setIsConverting] = useState(false);
+    const [isConverting, setIsConverting] = useState(false); // ?
+    const [selectedImage, setSelectedImage] = useState(null);
 
     useEffect(() => {
         async function loadUser() {
@@ -47,14 +49,47 @@ export default function CreatePostScreen({ navigation }) {
         loadData();
     }, [userId]);
 
+    async function pickImage() {
+        try {
+
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+            if (status !== 'granted') {
+                Alert.alert('Permission Required', 'Sorry, we need camera roll permissions to upload images.');
+                return;
+            }
+
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 0.8,
+            });
+
+            if (!result.canceled && result.assets && result.assets.length > 0){
+                setSelectedImage(result.assets[0].uri);
+                setImageUrl("");
+            }
+
+        }
+        catch (error) {
+            Alert.alert("Error", "Failed to pick image" + error.message);
+        }
+    }
+
+    function removeImage(){
+        setSelectedImage(null),
+        setImageUrl("");
+    }
+
     async function createPost() {
         if (!userId) {
             Alert.alert("Error", "User ID not found. Please log in again.");
             return;
         }
         
-        if (!description || !selectedCommunity) {
-            Alert.alert("Missing Information", "Please select a community and write a description.");
+        if (!selectedCommunity) {
+            Alert.alert("Missing Information", "Please select a community.");
             return;
         }
         
@@ -62,9 +97,15 @@ export default function CreatePostScreen({ navigation }) {
             // convert image URL to base64 before saving
             setIsConverting(true);
             let imageData = '';
-            if (imageUrl && imageUrl.trim() !== '') {
+
+            //
+            if (selectedImage){
+                imageData = await urlToBase64(selectedImage);
+            } else if(imageUrl && imageUrl.trim() !== '') {
                 imageData = await urlToBase64(imageUrl);
             }
+            
+
             setIsConverting(false);
             
             const json = await marthaFetch("create-post", {
@@ -141,18 +182,66 @@ export default function CreatePostScreen({ navigation }) {
                     multiline
                 />
 
+                <Text style={theme.label}>Add Image (Optional) </Text>
+
+                <TouchableOpacity 
+                    style={{
+                        backgroundColor: '#2a2a2a',
+                        padding: 15,
+                        borderRadius: 10,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: 10,
+                        borderWidth: 1,
+                        borderColor: '#444',
+                    }}
+                    onPress={pickImage}
+                >
+                    <Ionicons name="images-outline" size={24} color="white" style={{marginRight: 10}} />
+                    <Text style={{color: 'white', fontSize: 16}}>
+                        Choose from Gallery
+                    </Text>
+                </TouchableOpacity>
+
+                <View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 10}}>
+                    <View style={{flex: 1, height: 1, backgroundColor: '#444'}} />
+                    <Text style={{color: '#888', marginHorizontal: 10}}>OR</Text>
+                    <View style={{flex: 1, height: 1, backgroundColor: '#444'}} />
+                </View>
+
+
                 <Text style={theme.label}>Image URL (Optional)</Text>
-                 <TextInput
+                <TextInput
                     style={theme.input}
                     placeholder="https://example.com/image.png"
                     placeholderTextColor="#aaa"
                     value={imageUrl}
                     onChangeText={setImageUrl}
+                    editable={!selectedImage} // Disable if image from gallery is selected
                 />
 
-                {imageUrl ? (
-                    <Image source={{ uri: imageUrl }} style={theme.previewImage} />
-                ) : null}
+                {(selectedImage || imageUrl) && (
+                    <View style={{marginTop: 15, position: 'relative'}}>
+                        <Image 
+                            source={{ uri: selectedImage || imageUrl }} 
+                            style={theme.previewImage}
+                        />
+                        <TouchableOpacity
+                            style={{
+                                position: 'absolute',
+                                top: 10,
+                                right: 10,
+                                backgroundColor: 'rgba(0,0,0,0.7)',
+                                borderRadius: 20,
+                                padding: 8,
+                            }}
+                            onPress={removeImage}
+                        >
+                            <Ionicons name="close" size={20} color="white" />
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 <TouchableOpacity 
                     style={[theme.publishButton, isConverting && {opacity: 0.6}]} 
