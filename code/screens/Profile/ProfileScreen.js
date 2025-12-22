@@ -59,9 +59,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={theme.screenContainer}>
         <View style={[theme.headerRow, {justifyContent: 'space-between', paddingHorizontal: 20, width: '100%'}]}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={24} color="white" />
-            </TouchableOpacity>
+            <Text style={theme.title}>Profile</Text>
             <TouchableOpacity onPress={() => navigation.navigate('EditProfile')}>
                 <Ionicons name="settings-outline" size={24} color="white" />
             </TouchableOpacity>

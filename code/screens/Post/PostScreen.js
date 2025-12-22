@@ -235,9 +235,16 @@ export default function PostScreen({ route, navigation }) {
                                         style={styles.commentAvatar} 
                                     />
                                     <View style={styles.commentContent}>
-                                        <Text style={styles.commentAuthor}>
-                                            {comment.firstname} {comment.lastname}
-                                        </Text>
+                                        <View style={styles.commentHeader}>
+                                            <Text style={styles.commentAuthor}>
+                                                {comment.firstname} {comment.lastname}
+                                            </Text>
+                                            {comment.created_at && (
+                                                <Text style={styles.commentDate}>
+                                                    {new Date(comment.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                </Text>
+                                            )}
+                                        </View>
                                         <Text style={styles.commentText}>{comment.content}</Text>
                                     </View>
                                     {userId && userId == comment.user_id && (
@@ -389,11 +396,20 @@ const styles = StyleSheet.create({
     commentContent: {
         flex: 1,
     },
+    commentHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 4,
+    },
     commentAuthor: {
         color: "white",
         fontWeight: "bold",
         fontSize: 14,
-        marginBottom: 4,
+    },
+    commentDate: {
+        color: "#888",
+        fontSize: 11,
     },
     commentText: {
         color: "#DDD",

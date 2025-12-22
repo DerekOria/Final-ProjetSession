@@ -57,18 +57,17 @@ export default function HomeScreen({ route }){
 
         <View style={theme.headerRow}>
 
-            <TouchableOpacity onPress={() => navigation.navigate("CreatePost")} style={{ padding: 4 }}>
-                <Ionicons name="add-circle" size={36} color={colors.primary} />
+            <TouchableOpacity style={theme.profileButton} onPress={() => navigation.navigate("Profile") }>
+                <Image
+                    source={{ uri: userImage }}
+                    style={theme.profileImage}
+                />
             </TouchableOpacity>
             
             <Text style={theme.title}> KAEB </Text>
             
-            <TouchableOpacity style={theme.profileButton} onPress={() => navigation.navigate("Profile") }>
-            
-            <Image
-                source={{ uri: userImage }}
-                style={theme.profileImage}
-            />
+            <TouchableOpacity onPress={() => navigation.navigate("CreatePost")} style={{ padding: 4 }}>
+                <Ionicons name="add-circle" size={36} color={colors.primary} />
             </TouchableOpacity>
         </View>
 

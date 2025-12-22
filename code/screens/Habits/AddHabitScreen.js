@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Animated, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../config/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,9 +11,20 @@ export default function AddHabitScreen({ navigation }) {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [communityId, setCommunityId] = useState(null);
-    const [frequency, setFrequency] = useState('Daily');
+    const [frequency, setFrequency] = useState(null);
     const [communities, setCommunities] = useState([]);
     const [userId, setUserId] = useState(null);
+    const [toastMessage, setToastMessage] = useState('');
+    const [fadeAnim] = useState(new Animated.Value(0));
+
+    const showToast = (message) => {
+        setToastMessage(message);
+        Animated.sequence([
+            Animated.timing(fadeAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
+            Animated.delay(2500),
+            Animated.timing(fadeAnim, { toValue: 0, duration: 300, useNativeDriver: true }),
+        ]).start(() => setToastMessage(''));
+    };
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -25,12 +36,9 @@ export default function AddHabitScreen({ navigation }) {
                 const data = await marthaFetch("select-communities");
                 if (data.success) {
                     setCommunities(data.data);
-                    if (data.data.length > 0) {
-                        setCommunityId(data.data[0].id);
-                    }
                 }
             } catch (error) {
-                Alert.alert("Error", "Failed to load communities.");
+                showToast("⚠ Failed to load communities");
             }
         };
         fetchUserData();
@@ -38,54 +46,47 @@ export default function AddHabitScreen({ navigation }) {
     }, []);
 
     const handleAddHabit = async () => {
-        if (!name || !description || !communityId || !frequency) {
-            Alert.alert('Error', 'Please fill in all fields.');
+        if (!name || !name.trim()) {
+            showToast('⚠ Please enter a habit name');
+            return;
+        }
+        if (!communityId) {
+            showToast('⚠ Please select a community');
+            return;
+        }
+        if (!frequency) {
+            showToast('⚠ Please select a frequency');
             return;
         }
 
         try {
+            // Create habit with user_id directly (no UserHabits table needed)
             const createData = await marthaFetch("create-habit", {
-                'name': name,
-                'description': description,
+                'name': name.trim(),
+                'description': description ? description.trim() : '',
                 'community_id': communityId,
-                'frequency': frequency
+                'frequency': frequency,
+                'user_id': String(userId)
             });
 
             if (createData.success) {
-                // get the id of the habit we just made
-                const getHabitIdData = await marthaFetch("select-last-created-habit", {
-                    'name': name,
-                    'description': description,
-                    'community_id': communityId
-                });
-
-                if (getHabitIdData.success && getHabitIdData.data.length > 0) {
-                    const habitId = getHabitIdData.data[0].id;
-
-                    const assignData = await marthaFetch("assign-habit-to-user", {
-                        'user_id': String(userId),
-                        'habit_id': String(habitId)
-                    });
-
-                    if (assignData.success) {
-                        Alert.alert('Success', 'Habit added successfully.');
-                        navigation.goBack();
-                    } else {
-                        Alert.alert('Error', 'Failed to assign habit to user.');
-                    }
-                } else {
-                    Alert.alert('Error', 'Failed to retrieve new habit ID.');
-                }
+                showToast('✓ Habit added successfully!');
+                setTimeout(() => navigation.goBack(), 1500);
             } else {
-                Alert.alert('Error', 'Failed to create habit.');
+                showToast('⚠ Could not create habit');
             }
         } catch (error) {
-            Alert.alert('Error', 'An unexpected error occurred.');
+            showToast('⚠ Network error. Check your connection.');
         }
     };
 
     return (
         <SafeAreaView style={theme.screenContainer}>
+            {toastMessage !== '' && (
+                <Animated.View style={[styles.toast, { opacity: fadeAnim }]}>
+                    <Text style={styles.toastText}>{toastMessage}</Text>
+                </Animated.View>
+            )}
             <KeyboardAvoidingView 
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={{ flex: 1 }}
@@ -107,7 +108,7 @@ export default function AddHabitScreen({ navigation }) {
                     value={name}
                     onChangeText={setName}
                 />
-                <Text style={theme.label}>Description</Text>
+                <Text style={theme.label}>Description (Optional)</Text>
                 <TextInput
                     style={[theme.input, {height: 100, textAlignVertical: 'top'}]}
                     placeholder="e.g., I want to wake up everyday at 8 AM"
@@ -148,3 +149,23 @@ export default function AddHabitScreen({ navigation }) {
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    toast: {
+        position: 'absolute',
+        top: 60,
+        left: 20,
+        right: 20,
+        backgroundColor: '#333',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        zIndex: 1000,
+        alignItems: 'center',
+    },
+    toastText: {
+        color: 'white',
+        fontSize: 14,
+        fontWeight: '600',
+    },
+});

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Animated } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Animated, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { useState, useEffect, useRef } from "react";
@@ -31,6 +31,7 @@ function HabitCard({ item, onEdit, index }) {
   const habitName = item.name || item.h_name;
   const habitDesc = item.description || item.h_description;
   const frequency = item.frequency || item.h_frequency || 'Daily';
+  const communityName = item.community_name || item.community || 'General';
   
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -49,12 +50,12 @@ function HabitCard({ item, onEdit, index }) {
         </View>
         <View style={styles.headerText}>
           <Text style={styles.habitName} numberOfLines={1}>{habitName}</Text>
-          <View style={[styles.frequencyBadge, { backgroundColor: getFrequencyColor(frequency) }]}>
-            <Text style={styles.frequencyText}>{frequency}</Text>
+          <View style={[styles.communityBadge, { backgroundColor: getFrequencyColor(frequency) }]}>
+            <Text style={styles.communityText}>{communityName}</Text>
           </View>
         </View>
         <TouchableOpacity onPress={onEdit} style={styles.editButton}>
-          <Ionicons name="ellipsis-horizontal" size={20} color="#666" />
+          <Ionicons name="ellipsis-vertical" size={20} color="#666" />
         </TouchableOpacity>
       </View>
       
@@ -77,14 +78,23 @@ export default function HabitTrackerScreen() {
   const isFocused = useIsFocused();
   const [habits, setHabits] = useState([]);
   const [userId, setUserId] = useState(null);
+  const [userImage, setUserImage] = useState("https://cdn-icons-png.flaticon.com/512/149/149071.png");
 
   useEffect(() => {
-    async function getUserId() {
+    async function getUserData() {
       const id = await AsyncStorage.getItem("user_id");
       setUserId(id);
+      
+      const userData = await AsyncStorage.getItem("user");
+      if (userData) {
+        const user = JSON.parse(userData);
+        if (user.avatar_url) {
+          setUserImage(user.avatar_url);
+        }
+      }
     }
-    getUserId();
-  }, []);
+    getUserData();
+  }, [isFocused]);
 
   useEffect(() => {
     async function fetchHabits() {
@@ -138,8 +148,11 @@ export default function HabitTrackerScreen() {
   return (
     <SafeAreaView style={theme.screenContainer}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="white" />
+        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+          <Image
+            source={{ uri: userImage }}
+            style={styles.profileImage}
+          />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Habit Tracker</Text>
         <TouchableOpacity onPress={() => navigation.navigate("AddHabit")} style={styles.addButton}>
@@ -180,13 +193,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-  backButton: {
-    padding: 4,
+  profileImage: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
   },
   headerTitle: {
     color: '#FFF',
     fontSize: 20,
     fontWeight: '700',
+    flex: 1,
+    textAlign: 'center',
   },
   addButton: {
     padding: 4,
@@ -245,13 +262,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 4,
   },
-  frequencyBadge: {
+  communityBadge: {
     alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 3,
     borderRadius: 10,
   },
-  frequencyText: {
+  communityText: {
     color: '#FFF',
     fontSize: 11,
     fontWeight: '600',

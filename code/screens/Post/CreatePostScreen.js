@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, TextInput, ScrollView, Alert, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, TouchableOpacity, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform, Animated, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,15 +10,26 @@ import * as ImagePicker from 'expo-image-picker';
 
 export default function CreatePostScreen({ navigation }) {
 
-    const [communities, setCommunities] = useState([]); // Charger les communities depuis Martha
+    const [communities, setCommunities] = useState([]);
     const [selectedCommunity, setSelectedCommunity] = useState(null);
     const [description, setDescription] = useState("");
     const [imageUrl, setImageUrl] = useState("");
     const [userId, setUserId] = useState(null);
-    const [habits, setHabits] = useState([]); // Charger les habits depuis Martha
+    const [habits, setHabits] = useState([]);
     const [selectedHabit, setSelectedHabit] = useState(null);
-    const [isConverting, setIsConverting] = useState(false); // ?
+    const [isConverting, setIsConverting] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [toastMessage, setToastMessage] = useState('');
+    const [fadeAnim] = useState(new Animated.Value(0));
+
+    const showToast = (message) => {
+        setToastMessage(message);
+        Animated.sequence([
+            Animated.timing(fadeAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
+            Animated.delay(2500),
+            Animated.timing(fadeAnim, { toValue: 0, duration: 300, useNativeDriver: true }),
+        ]).start(() => setToastMessage(''));
+    };
 
     useEffect(() => {
         async function loadUser() {
@@ -43,7 +54,7 @@ export default function CreatePostScreen({ navigation }) {
                 }
 
             } catch (error) {
-                Alert.alert("Error", "Could not load data.");
+                showToast("⚠ Could not load data");
             }
         }
         loadData();
@@ -55,7 +66,7 @@ export default function CreatePostScreen({ navigation }) {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
             if (status !== 'granted') {
-                Alert.alert('Permission Required', 'Sorry, we need camera roll permissions to upload images.');
+                showToast('⚠ Camera roll permission required');
                 return;
             }
 
@@ -63,17 +74,24 @@ export default function CreatePostScreen({ navigation }) {
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [4, 3],
-                quality: 0.8,
+                quality: 0.1,
+                base64: true,
             });
 
             if (!result.canceled && result.assets && result.assets.length > 0){
-                setSelectedImage(result.assets[0].uri);
+                const asset = result.assets[0];
+                // Use base64 directly if available, otherwise use uri
+                if (asset.base64) {
+                    setSelectedImage(`data:image/jpeg;base64,${asset.base64}`);
+                } else {
+                    setSelectedImage(asset.uri);
+                }
                 setImageUrl("");
             }
 
         }
         catch (error) {
-            Alert.alert("Error", "Failed to pick image" + error.message);
+            showToast("⚠ Could not load selected image");
         }
     }
 
@@ -84,12 +102,12 @@ export default function CreatePostScreen({ navigation }) {
 
     async function createPost() {
         if (!userId) {
-            Alert.alert("Error", "User ID not found. Please log in again.");
+            showToast("⚠ Please log in again");
             return;
         }
         
         if (!selectedCommunity) {
-            Alert.alert("Missing Information", "Please select a community.");
+            showToast("⚠ Please select a community");
             return;
         }
         
@@ -98,9 +116,13 @@ export default function CreatePostScreen({ navigation }) {
             setIsConverting(true);
             let imageData = '';
 
-            //
+            // Use selectedImage directly if it's already base64, otherwise convert
             if (selectedImage){
-                imageData = await urlToBase64(selectedImage);
+                if (selectedImage.startsWith('data:image')) {
+                    imageData = selectedImage;
+                } else {
+                    imageData = await urlToBase64(selectedImage);
+                }
             } else if(imageUrl && imageUrl.trim() !== '') {
                 imageData = await urlToBase64(imageUrl);
             }
@@ -117,18 +139,23 @@ export default function CreatePostScreen({ navigation }) {
             });
 
             if (json.success) {
-                Alert.alert("Success", "Post created!");
-                navigation.goBack();
+                showToast("✓ Post created successfully!");
+                setTimeout(() => navigation.goBack(), 1500);
             } else {
-                Alert.alert("Error", json.error || "Could not create the post.");
+                showToast("⚠ " + (json.error || "Could not create post"));
             }
         } catch (error) {
-            Alert.alert("Error", "An unexpected error occurred: " + error.message);
+            showToast("⚠ Network error. Check your connection.");
         }
     }
 
     return (
         <SafeAreaView style={[theme.screenContainer, {paddingHorizontal: 0}]}>
+            {toastMessage !== '' && (
+                <Animated.View style={[styles.toast, { opacity: fadeAnim }]}>
+                    <Text style={styles.toastText}>{toastMessage}</Text>
+                </Animated.View>
+            )}
             <KeyboardAvoidingView 
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={{ flex: 1 }}
@@ -158,19 +185,28 @@ export default function CreatePostScreen({ navigation }) {
                     placeholder="Select a community"
                 />
 
-                <Text style={theme.label}>Link a Habit (Optional)</Text>
-                <Dropdown
-                    options={[
-                        { label: "-- None --", value: null },
-                        ...habits.map(h => ({
-                            label: h.name || h.h_name,
-                            value: getHabitId(h)
-                        }))
-                    ]}
-                    selectedValue={selectedHabit}
-                    onSelect={setSelectedHabit}
-                    placeholder="Select a habit"
-                />
+                <View style={styles.habitSection}>
+                    <Text style={theme.label}>Link a Habit (Optional)</Text>
+                    <Dropdown
+                        options={[
+                            { label: "-- None --", value: null },
+                            ...habits.map(h => ({
+                                label: h.name || h.h_name,
+                                value: getHabitId(h)
+                            }))
+                        ]}
+                        selectedValue={selectedHabit}
+                        onSelect={setSelectedHabit}
+                        placeholder="Select a habit"
+                    />
+                    <TouchableOpacity 
+                        style={styles.createHabitButton}
+                        onPress={() => navigation.navigate('AddHabit')}
+                    >
+                        <Ionicons name="add-circle-outline" size={18} color="#2A9D8F" />
+                        <Text style={styles.createHabitText}>Create New Habit</Text>
+                    </TouchableOpacity>
+                </View>
 
                 <Text style={theme.label}>Description</Text>
                 <TextInput
@@ -258,3 +294,38 @@ export default function CreatePostScreen({ navigation }) {
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    toast: {
+        position: 'absolute',
+        top: 60,
+        left: 20,
+        right: 20,
+        backgroundColor: '#333',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        zIndex: 1000,
+        alignItems: 'center',
+    },
+    toastText: {
+        color: 'white',
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    habitSection: {
+        marginBottom: 5,
+    },
+    createHabitButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 8,
+        paddingVertical: 8,
+    },
+    createHabitText: {
+        color: '#2A9D8F',
+        fontSize: 14,
+        marginLeft: 6,
+        fontWeight: '500',
+    },
+});

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme, colors } from '../../config/theme';
 import Dropdown from '../../components/Dropdown';
@@ -12,10 +12,21 @@ export default function EditHabitScreen({ route, navigation }) {
     const habitId = getHabitId(habit);
     
     const [name, setName] = useState(habit.name || habit.h_name);
-    const [description, setDescription] = useState(habit.description || habit.h_description);
+    const [description, setDescription] = useState(habit.description || habit.h_description || '');
     const [communities, setCommunities] = useState([]);
     const [communityId, setCommunityId] = useState(habit.community_id || habit.h_community_id || null);
-    const [frequency, setFrequency] = useState(habit.frequency || habit.h_frequency || 'Daily');
+    const [frequency, setFrequency] = useState(habit.frequency || habit.h_frequency || null);
+    const [toastMessage, setToastMessage] = useState('');
+    const [fadeAnim] = useState(new Animated.Value(0));
+
+    const showToast = (message) => {
+        setToastMessage(message);
+        Animated.sequence([
+            Animated.timing(fadeAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
+            Animated.delay(2500),
+            Animated.timing(fadeAnim, { toValue: 0, duration: 300, useNativeDriver: true }),
+        ]).start(() => setToastMessage(''));
+    };
 
     useEffect(() => {
         async function fetchCommunities() {
@@ -23,15 +34,18 @@ export default function EditHabitScreen({ route, navigation }) {
                 const data = await marthaFetch("select-communities");
                 if (data.success) {
                     setCommunities(data.data);
-                    // default to first community if needed
-                    if ((communityId === null || communityId === '' || !data.data.find(c => c.id === communityId)) && data.data.length > 0) {
-                        setCommunityId(data.data[0].id);
+                    // Set community if it exists and is valid
+                    if (communityId && data.data.find(c => c.id === communityId)) {
+                        // Keep the existing communityId
+                    } else if (data.data.length > 0) {
+                        // Only set default if current is invalid
+                        setCommunityId(null);
                     }
                 } else {
-                    Alert.alert("Error", "Failed to load communities.");
+                    showToast("⚠ Failed to load communities");
                 }
             } catch (error) {
-                Alert.alert("Error", "An unexpected error occurred while loading communities.");
+                showToast("⚠ Network error loading communities");
             }
         };
         fetchCommunities();
@@ -39,51 +53,42 @@ export default function EditHabitScreen({ route, navigation }) {
 
     const handleUpdateHabit = async () => {
         if (!habitId) {
-            Alert.alert('Error', 'No habit ID found. Cannot update.');
+            showToast('⚠ No habit ID found');
             return;
         }
         
-        if (!name.trim() || !description.trim() || !frequency) {
-            Alert.alert('Error', 'Please fill in all required fields.');
+        if (!name || !name.trim()) {
+            showToast('⚠ Please enter a habit name');
+            return;
+        }
+        if (!frequency) {
+            showToast('⚠ Please select a frequency');
             return;
         }
 
         try {
             const data = await marthaFetch("update-habit", {
                 'name': name.trim(),
-                'description': description.trim(),
+                'description': description ? description.trim() : '',
                 'community_id': communityId,
                 'frequency': frequency,
                 'habit_id': habitId
             });
             
             if (data.success) {
-                Alert.alert('Success', 'Habit updated successfully.');
-                navigation.goBack();
+                showToast('✓ Habit updated successfully!');
+                setTimeout(() => navigation.goBack(), 1500);
             } else {
-                Alert.alert('Error', data.error || 'Failed to update habit.');
+                showToast('⚠ ' + (data.error || 'Failed to update habit'));
             }
         } catch (error) {
-            Alert.alert('Error', 'An unexpected error occurred: ' + error.message);
+            showToast('⚠ Network error. Check your connection.');
         }
     };
     
     const performDelete = async () => {
         try {
-            // delete user-habit links first
-            const deleteUserHabitsData = await marthaFetch("delete-user-habits-by-habit-id", {
-                'habit_id': habitId
-            });
-
-            if (!deleteUserHabitsData.success) {
-                if (Platform.OS === 'web') {
-                    alert(deleteUserHabitsData.error || 'Failed to delete associated user habits.');
-                } else {
-                    Alert.alert('Error', deleteUserHabitsData.error || 'Failed to delete associated user habits.');
-                }
-                return;
-            }
-
+            // Delete habit directly (user_id is now in Habits table, no UserHabits needed)
             const data = await marthaFetch("delete-habit", {
                 'habit_id': habitId
             });
@@ -141,6 +146,11 @@ export default function EditHabitScreen({ route, navigation }) {
 
     return (
         <SafeAreaView style={theme.screenContainer}>
+            {toastMessage !== '' && (
+                <Animated.View style={[styles.toast, { opacity: fadeAnim }]}>
+                    <Text style={styles.toastText}>{toastMessage}</Text>
+                </Animated.View>
+            )}
             <KeyboardAvoidingView 
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={{ flex: 1 }}
@@ -162,7 +172,7 @@ export default function EditHabitScreen({ route, navigation }) {
                     value={name}
                     onChangeText={setName}
                 />
-                <Text style={theme.label}>Description</Text>
+                <Text style={theme.label}>Description (Optional)</Text>
                 <TextInput
                     style={[theme.input, {height: 100, textAlignVertical: 'top'}]}
                     placeholder="Description"
@@ -216,5 +226,22 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10,
         marginVertical: 10,
+    },
+    toast: {
+        position: 'absolute',
+        top: 60,
+        left: 20,
+        right: 20,
+        backgroundColor: '#333',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        zIndex: 1000,
+        alignItems: 'center',
+    },
+    toastText: {
+        color: 'white',
+        fontSize: 14,
+        fontWeight: '600',
     },
 });
