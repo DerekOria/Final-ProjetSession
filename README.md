@@ -1,7 +1,7 @@
 # Kaeb - Application mobile de développement personnel
 
 > Projet académique - Développement d'applications mobiles
-> Cégep de Shawinigan | Automne 2024
+> Cégep de Shawinigan | Automne 2025
 
 ## Description
 
