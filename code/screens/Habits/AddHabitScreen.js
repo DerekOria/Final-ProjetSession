@@ -60,7 +60,6 @@ export default function AddHabitScreen({ navigation }) {
         }
 
         try {
-            // Create habit with user_id directly (no UserHabits table needed)
             const createData = await marthaFetch("create-habit", {
                 'name': name.trim(),
                 'description': description ? description.trim() : '',
