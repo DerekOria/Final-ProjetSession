@@ -32,10 +32,10 @@ Kaeb est une application mobile dédiée aux étudiants qui souhaitent améliore
 ## Captures d'écran
 
 <p align="center">
-  <img src="image.png" width="200" alt="Écran d'accueil"/>
-  <img src="image-1.png" width="200" alt="Suivi habitudes"/>
-  <img src="image-2.png" width="200" alt="Suivi habitudes"/>
-  <img src="image-3.png" width="209" alt="Suivi habitudes"/>
+  <img src="screenshots/image.png" width="200" alt="Écran d'accueil"/>
+  <img src="screenshots/image-1.png" width="200" alt="Suivi habitudes"/>
+  <img src="screenshots/image-2.png" width="200" alt="Suivi habitudes"/>
+  <img src="screenshots/image-3.png" width="209" alt="Suivi habitudes"/>
 </p>
 
 ## Installation et utilisation
